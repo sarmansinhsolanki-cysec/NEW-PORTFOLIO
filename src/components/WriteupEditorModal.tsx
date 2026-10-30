@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+  import React, { useEffect, useRef, useState } from 'react';
 import { RotateCcw, Save, Upload, X } from 'lucide-react';
 import {
   GREEK_GOD_PRESETS,
@@ -164,7 +164,7 @@ export const WriteupEditorModal: React.FC<WriteupEditorModalProps> = ({
 
     const cleanIndex = index.trim().slice(0, 8);
     const cleanTitle = title.trim().slice(0, 160);
-    const cleanSubtitle = subtitle.trim().slice(0, 240);
+        const cleanSubtitle = (subtitle.trim() || cleanTitle).slice(0, 240);
     const cleanDate = date.trim().slice(0, 40);
     const cleanEnv = environment.trim().slice(0, 80);
     const cleanOwasp = owaspMapping.trim().slice(0, 80);

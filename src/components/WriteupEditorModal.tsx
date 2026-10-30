@@ -600,35 +600,6 @@ export const WriteupEditorModal: React.FC<WriteupEditorModalProps> = ({
             />
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            <div className="space-y-1.5">
-              <label htmlFor="wu-poc" className="block font-mono text-xs text-[#9ca2c4]">
-                HTTP Proof of Concept Trace
-              </label>
-              <textarea
-                id="wu-poc"
-                rows={4}
-                maxLength={4000}
-                value={httpPoc}
-                onChange={(e) => setHttpPoc(e.target.value)}
-                className="w-full border border-white/15 bg-[#050611] px-3.5 py-2.5 font-mono text-xs text-white focus:border-[#5f6bff] focus:outline-none leading-relaxed"
-              />
-            </div>
-
-            <div className="space-y-1.5">
-              <label htmlFor="wu-curl" className="block font-mono text-xs text-[#9ca2c4]">
-                Reproducible Verification Command (cURL)
-              </label>
-              <textarea
-                id="wu-curl"
-                rows={4}
-                maxLength={1200}
-                value={curlVerify}
-                onChange={(e) => setCurlVerify(e.target.value)}
-                className="w-full border border-white/15 bg-[#050611] px-3.5 py-2.5 font-mono text-xs text-white focus:border-[#5f6bff] focus:outline-none leading-relaxed"
-              />
-            </div>
-          </div>
 
           <div className="space-y-1.5">
             <label htmlFor="wu-remediation" className="block font-mono text-xs text-[#9ca2c4]">

@@ -187,46 +187,6 @@ export const WriteupModal: React.FC<WriteupModalProps> = ({
             </ul>
           </div>
 
-          {/* HTTP / cURL PoC */}
-          <div className="space-y-5">
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <span className="font-mono text-xs text-[#9ca2c4]">
-                  HTTP Proof of Concept Trace
-                </span>
-                <button
-                  type="button"
-                  onClick={() => copyText(writeup.httpPoc, 'poc')}
-                  className="inline-flex items-center gap-1.5 font-mono text-xs text-[#8590ff] hover:text-white transition-colors cursor-pointer whitespace-nowrap shrink-0"
-                >
-                  {copiedPoc ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
-                  <span>{copiedPoc ? 'Copied Trace' : 'Copy HTTP Trace'}</span>
-                </button>
-              </div>
-              <pre className="overflow-x-auto border border-white/12 bg-[#04050e] p-4 font-mono text-xs text-[#e4e7f7] leading-relaxed">
-                <code>{writeup.httpPoc}</code>
-              </pre>
-            </div>
-
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <span className="font-mono text-xs text-[#9ca2c4]">
-                  Reproducible Verification Command
-                </span>
-                <button
-                  type="button"
-                  onClick={() => copyText(writeup.curlVerify, 'curl')}
-                  className="inline-flex items-center gap-1.5 font-mono text-xs text-[#8590ff] hover:text-white transition-colors cursor-pointer whitespace-nowrap shrink-0"
-                >
-                  {copiedCurl ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
-                  <span>{copiedCurl ? 'Copied Command' : 'Copy cURL'}</span>
-                </button>
-              </div>
-              <pre className="overflow-x-auto border border-white/12 bg-[#04050e] p-4 font-mono text-xs text-[#f2f2f2]">
-                <code>$ {writeup.curlVerify}</code>
-              </pre>
-            </div>
-          </div>
 
           <div className="space-y-2 border border-white/12 bg-[#0b0e26] p-5">
             <h3 className="font-display text-2xl text-white tracking-tight">

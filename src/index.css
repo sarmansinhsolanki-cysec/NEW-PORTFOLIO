@@ -1,0 +1,131 @@
+@import "tailwindcss";
+
+@theme {
+  --font-display: "Barlow Condensed", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  --color-hermes-canvas: #060714;
+  --color-hermes-surface: #0b0d21;
+  --color-hermes-elevated: #10132e;
+  --color-hermes-blue: #1822f2;
+  --color-hermes-blue-deep: #0b11c9;
+  --color-hermes-ink: #f2f2f2;
+  --color-hermes-muted: #9ca2c4;
+}
+
+@layer base {
+  html {
+    font-family: var(--font-sans);
+    background-color: #04072b;
+    color: #f2f2f2;
+    letter-spacing: 0.01em;
+  }
+
+  h1,
+  h2,
+  h3,
+  .font-display {
+    font-family: var(--font-display);
+  }
+}
+
+/* Ordered halftone pixel-dither matrix matching the electric cobalt CRT aesthetic */
+.hermes-dither-matrix {
+  background-image:
+    radial-gradient(rgba(122, 138, 255, 0.22) 1px, transparent 1px),
+    radial-gradient(rgba(12, 22, 242, 0.32) 1px, transparent 1px);
+  background-size: 4px 4px;
+  background-position: 0 0, 2px 2px;
+}
+
+.hermes-scanline-grid {
+  background-image: repeating-linear-gradient(
+    0deg,
+    rgba(0, 8, 245, 0.14) 0px,
+    rgba(0, 8, 245, 0.14) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+}
+
+/* Vertical woodcut hatch & stipple texture for Writeup poster cards */
+.hermes-woodcut-grain {
+  background-image:
+    repeating-linear-gradient(
+      90deg,
+      rgba(10, 12, 26, 0.3) 0px,
+      rgba(10, 12, 26, 0.3) 1px,
+      transparent 1px,
+      transparent 3px
+    ),
+    radial-gradient(rgba(166, 175, 214, 0.07) 1px, transparent 1px);
+  background-size: 100% 100%, 3px 3px;
+}
+
+@keyframes marquee-scroll {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  100% {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+.animate-marquee {
+  display: flex;
+  width: max-content;
+  animation: marquee-scroll 38s linear infinite;
+}
+
+.animate-marquee:hover {
+  animation-play-state: paused;
+}
+
+.indra-stage-container {
+  container-type: size;
+}
+
+.indra-fitted-16x9 {
+  width: min(100cqw, calc(100cqh * 16 / 9));
+  height: min(100cqh, calc(100cqw * 9 / 16));
+}
+
+.indra-seamless-edge {
+  -webkit-mask-image:
+    linear-gradient(to right, transparent 0%, #000 1%, #000 99%, transparent 100%),
+    linear-gradient(to bottom, transparent 0%, #000 1.4%, #000 98.6%, transparent 100%);
+  -webkit-mask-composite: source-in;
+  mask-image:
+    linear-gradient(to right, transparent 0%, #000 1%, #000 99%, transparent 100%),
+    linear-gradient(to bottom, transparent 0%, #000 1.4%, #000 98.6%, transparent 100%);
+  mask-composite: intersect;
+}
+
+@keyframes cosmic-float {
+  0%,
+  100% {
+    transform: translate3d(0px, 6px, 0) scale(1);
+  }
+  25% {
+    transform: translate3d(3.5px, -1px, 0) scale(1.003);
+  }
+  50% {
+    transform: translate3d(0px, -6px, 0) scale(1.006);
+  }
+  75% {
+    transform: translate3d(-3.5px, 1px, 0) scale(1.003);
+  }
+}
+
+.animate-cosmic-float {
+  will-change: transform;
+  animation: cosmic-float 8s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-marquee,
+  .animate-cosmic-float {
+    animation: none;
+  }
+}

@@ -1,0 +1,269 @@
+{
+  "entities": {
+    "Writeup": {
+      "title": "Writeup",
+      "description": "A technical web application security writeup authored and managed exclusively by Sarmansinh Solanki.",
+      "type": "object",
+      "properties": {
+        "index": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 8,
+          "description": "Display index label such as 01, 02."
+        },
+        "title": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 160,
+          "description": "Headline title of the security writeup."
+        },
+        "subtitle": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 240,
+          "description": "Concise technical subtitle."
+        },
+        "category": {
+          "type": "string",
+          "enum": ["Auth & Session", "Server-Side", "Client-Side & API"],
+          "description": "Web application vulnerability category."
+        },
+        "date": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 40,
+          "description": "Publication month and year."
+        },
+        "environment": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 80,
+          "description": "Lab, CTF, or bug bounty research context."
+        },
+        "owaspMapping": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 80,
+          "description": "OWASP Top 10 or API Security mapping."
+        },
+        "readTime": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 30,
+          "description": "Estimated reading time."
+        },
+        "godPreset": {
+          "type": "string",
+          "enum": ["athena", "apollo", "poseidon", "ares", "hermes", "zeus"],
+          "description": "Built-in artwork plate identifier."
+        },
+        "customImageUrl": {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 240000,
+          "description": "Optional owner-uploaded compressed artwork data URI or HTTPS/local asset URL; empty string falls back to godPreset."
+        },
+        "summary": {
+          "type": "string",
+          "minLength": 10,
+          "maxLength": 600,
+          "description": "Card summary of the vulnerability research."
+        },
+        "vulnerabilityRootCause": {
+          "type": "string",
+          "minLength": 10,
+          "maxLength": 2000,
+          "description": "Detailed root cause explanation."
+        },
+        "exploitationStepsText": {
+          "type": "string",
+          "minLength": 10,
+          "maxLength": 4000,
+          "description": "Newline-delimited step-by-step exploitation chain."
+        },
+        "remediation": {
+          "type": "string",
+          "minLength": 10,
+          "maxLength": 2000,
+          "description": "Recommended security fix and hardening steps."
+        },
+        "httpPoc": {
+          "type": "string",
+          "minLength": 5,
+          "maxLength": 4000,
+          "description": "HTTP request/response or script proof-of-concept trace."
+        },
+        "curlVerify": {
+          "type": "string",
+          "minLength": 5,
+          "maxLength": 1200,
+          "description": "Reproducible cURL verification command."
+        },
+        "visibility": {
+          "type": "string",
+          "enum": ["public", "draft"],
+          "description": "Controls public visibility in list queries."
+        },
+        "order": {
+          "type": "number",
+          "description": "Numeric sort order."
+        },
+        "authorUid": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$",
+          "description": "Firebase Auth UID of the owner."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Immutable creation server timestamp."
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Last modification server timestamp."
+        }
+      },
+      "required": [
+        "index",
+        "title",
+        "subtitle",
+        "category",
+        "date",
+        "environment",
+        "owaspMapping",
+        "readTime",
+        "godPreset",
+        "summary",
+        "vulnerabilityRootCause",
+        "exploitationStepsText",
+        "remediation",
+        "httpPoc",
+        "curlVerify",
+        "visibility",
+        "order",
+        "authorUid",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "SiteMediaSlot": {
+      "title": "SiteMediaSlot",
+      "description": "Owner-configurable visual slot for global portfolio background, hero artwork, and closing banner.",
+      "type": "object",
+      "properties": {
+        "slot": {
+          "type": "string",
+          "enum": ["background", "hero", "closingBanner"],
+          "description": "Target image slot identifier matching the document ID."
+        },
+        "imageUrl": {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 420000,
+          "description": "Compressed raster data URI, HTTPS URL, or local /assets/ path; empty string uses built-in default."
+        },
+        "blendMode": {
+          "type": "string",
+          "enum": ["normal", "lighten"],
+          "description": "Rendering blend mode for artwork slots."
+        },
+        "visibility": {
+          "type": "string",
+          "enum": ["public"],
+          "description": "Public read marker."
+        },
+        "authorUid": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$",
+          "description": "Owner Firebase Auth UID."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Immutable creation server timestamp."
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Last modification server timestamp."
+        }
+      },
+      "required": ["slot", "imageUrl", "blendMode", "visibility", "authorUid", "createdAt", "updatedAt"]
+    },
+    "PortfolioMeta": {
+      "title": "PortfolioMeta",
+      "description": "Singleton metadata tracking initial seeding of the writeups collection.",
+      "type": "object",
+      "properties": {
+        "seeded": {
+          "type": "boolean",
+          "description": "Whether initial Greek god writeups have been seeded to Firestore."
+        },
+        "visibility": {
+          "type": "string",
+          "enum": ["public"],
+          "description": "Public read marker."
+        },
+        "authorUid": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$",
+          "description": "Owner Firebase Auth UID."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Immutable creation server timestamp."
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Last update server timestamp."
+        }
+      },
+      "required": ["seeded", "visibility", "authorUid", "createdAt", "updatedAt"]
+    },
+    "AdminRecord": {
+      "title": "AdminRecord",
+      "description": "Trusted admin registry keyed by Firebase UID.",
+      "type": "object",
+      "properties": {
+        "role": {
+          "type": "string",
+          "enum": ["owner"],
+          "description": "Owner role marker."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Creation server timestamp."
+        }
+      },
+      "required": ["role", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/writeups/{writeupId}": {
+      "schema": { "$ref": "#/entities/Writeup" },
+      "description": "Security writeups readable when visibility == 'public' and editable strictly by owner Sarmansinh Solanki."
+    },
+    "/siteMedia/{slotId}": {
+      "schema": { "$ref": "#/entities/SiteMediaSlot" },
+      "description": "Global portfolio visual slots (background, hero, closingBanner) readable publicly and editable strictly by owner Sarmansinh Solanki."
+    },
+    "/siteConfig/{configId}": {
+      "schema": { "$ref": "#/entities/PortfolioMeta" },
+      "description": "Publicly readable portfolio seed status document."
+    },
+    "/admins/{adminId}": {
+      "schema": { "$ref": "#/entities/AdminRecord" },
+      "description": "Locked admin role lookup collection."
+    }
+  }
+}

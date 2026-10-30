@@ -1,0 +1,306 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Global Safety Net — Default-deny catch-all
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Global Hardened Primitives
+    function isValidId(id) {
+      return id is string && id.size() >= 1 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isVerifiedUser() {
+      return isSignedIn() && request.auth.token.email_verified == true;
+    }
+
+    // Bootstrapped Owner/Admin check with anti-spoofing email_verified enforcement
+    function isAdmin() {
+      return isVerifiedUser() && (
+        request.auth.token.email == "sarmansinhsolanki@gmail.com" ||
+        exists(/databases/$(database)/documents/admins/$(request.auth.uid))
+      );
+    }
+
+    function isSafeMediaUrl(url, maxLen) {
+      return url is string &&
+        url.size() >= 0 &&
+        url.size() <= maxLen &&
+        (
+          url.size() == 0 ||
+          (url.size() >= 8 && url[0:8] == "https://") ||
+          (url.size() >= 8 && url[0:8] == "/assets/") ||
+          (url.size() >= 12 && url[0:12] == "/src/assets/") ||
+          (url.size() >= 23 && url[0:23] == "data:image/jpeg;base64,") ||
+          (url.size() >= 23 && url[0:23] == "data:image/webp;base64,") ||
+          (url.size() >= 22 && url[0:22] == "data:image/png;base64,")
+        );
+    }
+
+    function isAllowedMediaSlotId(slotId) {
+      return slotId == "background" || slotId == "hero" || slotId == "closingBanner";
+    }
+
+    // Standalone Validation Blueprint for Writeup (synchronized verbatim with firebase-blueprint.json)
+    function isValidWriteup(data) {
+      let requiredKeys = [
+        'index',
+        'title',
+        'subtitle',
+        'category',
+        'date',
+        'environment',
+        'owaspMapping',
+        'readTime',
+        'godPreset',
+        'summary',
+        'vulnerabilityRootCause',
+        'exploitationStepsText',
+        'remediation',
+        'httpPoc',
+        'curlVerify',
+        'visibility',
+        'order',
+        'authorUid',
+        'createdAt',
+        'updatedAt'
+      ];
+      let allowedKeys = [
+        'index',
+        'title',
+        'subtitle',
+        'category',
+        'date',
+        'environment',
+        'owaspMapping',
+        'readTime',
+        'godPreset',
+        'customImageUrl',
+        'summary',
+        'vulnerabilityRootCause',
+        'exploitationStepsText',
+        'remediation',
+        'httpPoc',
+        'curlVerify',
+        'visibility',
+        'order',
+        'authorUid',
+        'createdAt',
+        'updatedAt'
+      ];
+      return isSignedIn() &&
+        data.keys().hasAll(requiredKeys) &&
+        data.keys().hasOnly(allowedKeys) &&
+        data.index is string && data.index.size() >= 1 && data.index.size() <= 8 &&
+        data.title is string && data.title.size() >= 3 && data.title.size() <= 160 &&
+        data.subtitle is string && data.subtitle.size() >= 3 && data.subtitle.size() <= 240 &&
+        data.category is string && (
+          data.category == "Auth & Session" ||
+          data.category == "Server-Side" ||
+          data.category == "Client-Side & API"
+        ) &&
+        data.date is string && data.date.size() >= 2 && data.date.size() <= 40 &&
+        data.environment is string && data.environment.size() >= 2 && data.environment.size() <= 80 &&
+        data.owaspMapping is string && data.owaspMapping.size() >= 2 && data.owaspMapping.size() <= 80 &&
+        data.readTime is string && data.readTime.size() >= 2 && data.readTime.size() <= 30 &&
+        data.godPreset is string && (
+          data.godPreset == "athena" ||
+          data.godPreset == "apollo" ||
+          data.godPreset == "poseidon" ||
+          data.godPreset == "ares" ||
+          data.godPreset == "hermes" ||
+          data.godPreset == "zeus"
+        ) &&
+        (!('customImageUrl' in data) || isSafeMediaUrl(data.customImageUrl, 240000)) &&
+        data.summary is string && data.summary.size() >= 10 && data.summary.size() <= 600 &&
+        data.vulnerabilityRootCause is string && data.vulnerabilityRootCause.size() >= 10 && data.vulnerabilityRootCause.size() <= 2000 &&
+        data.exploitationStepsText is string && data.exploitationStepsText.size() >= 10 && data.exploitationStepsText.size() <= 4000 &&
+        data.remediation is string && data.remediation.size() >= 10 && data.remediation.size() <= 2000 &&
+        data.httpPoc is string && data.httpPoc.size() >= 5 && data.httpPoc.size() <= 4000 &&
+        data.curlVerify is string && data.curlVerify.size() >= 5 && data.curlVerify.size() <= 1200 &&
+        data.visibility is string && (data.visibility == "public" || data.visibility == "draft") &&
+        data.order is number && data.order >= 0 && data.order <= 10000 &&
+        data.authorUid is string &&
+        data.authorUid.size() >= 1 &&
+        data.authorUid.size() <= 128 &&
+        data.authorUid.matches('^[a-zA-Z0-9_\\-]+$') &&
+        data.authorUid == request.auth.uid &&
+        data.createdAt is timestamp &&
+        data.updatedAt is timestamp;
+    }
+
+    // Standalone Validation Blueprint for SiteMediaSlot (synchronized verbatim with firebase-blueprint.json)
+    function isValidSiteMedia(data, slotId) {
+      let allowedKeys = [
+        'slot',
+        'imageUrl',
+        'blendMode',
+        'visibility',
+        'authorUid',
+        'createdAt',
+        'updatedAt'
+      ];
+      return isSignedIn() &&
+        data.keys().hasAll(allowedKeys) &&
+        data.keys().hasOnly(allowedKeys) &&
+        data.slot is string &&
+        data.slot.size() >= 4 &&
+        data.slot.size() <= 32 &&
+        data.slot == slotId &&
+        isAllowedMediaSlotId(data.slot) &&
+        isSafeMediaUrl(data.imageUrl, 420000) &&
+        data.blendMode is string &&
+        (data.blendMode == "normal" || data.blendMode == "lighten") &&
+        data.visibility is string &&
+        data.visibility == "public" &&
+        data.authorUid is string &&
+        data.authorUid.size() >= 1 &&
+        data.authorUid.size() <= 128 &&
+        data.authorUid.matches('^[a-zA-Z0-9_\\-]+$') &&
+        data.authorUid == request.auth.uid &&
+        data.createdAt is timestamp &&
+        data.updatedAt is timestamp;
+    }
+
+    function isValidPortfolioMeta(data) {
+      let allowedKeys = ['seeded', 'visibility', 'authorUid', 'createdAt', 'updatedAt'];
+      return isSignedIn() &&
+        data.keys().hasAll(allowedKeys) &&
+        data.keys().hasOnly(allowedKeys) &&
+        data.seeded is bool &&
+        data.visibility is string && data.visibility == "public" &&
+        data.authorUid is string &&
+        data.authorUid.size() >= 1 &&
+        data.authorUid.size() <= 128 &&
+        data.authorUid.matches('^[a-zA-Z0-9_\\-]+$') &&
+        data.authorUid == request.auth.uid &&
+        data.createdAt is timestamp &&
+        data.updatedAt is timestamp;
+    }
+
+    // Collection 1: /writeups/{writeupId}
+    match /writeups/{writeupId} {
+      allow get: if isValidId(writeupId) && (isAdmin() || (resource != null && existing().visibility == "public"));
+      allow list: if existing().visibility == "public" || isAdmin();
+
+      allow create: if isSignedIn() &&
+        isValidId(writeupId) &&
+        isValidWriteup(incoming()) &&
+        incoming().createdAt == request.time &&
+        incoming().updatedAt == request.time &&
+        isAdmin();
+
+      allow update: if isValidWriteup(incoming()) &&
+        isSignedIn() &&
+        isValidId(writeupId) &&
+        incoming().authorUid == existing().authorUid &&
+        incoming().createdAt == existing().createdAt &&
+        incoming().updatedAt == request.time &&
+        (
+          // Action 1: Owner Quick Artwork Change
+          incoming().diff(existing()).affectedKeys().hasOnly([
+            'godPreset',
+            'customImageUrl',
+            'updatedAt'
+          ]) ||
+          // Action 2: Owner Full Writeup Edit
+          incoming().diff(existing()).affectedKeys().hasOnly([
+            'index',
+            'title',
+            'subtitle',
+            'category',
+            'date',
+            'environment',
+            'owaspMapping',
+            'readTime',
+            'godPreset',
+            'customImageUrl',
+            'summary',
+            'vulnerabilityRootCause',
+            'exploitationStepsText',
+            'remediation',
+            'httpPoc',
+            'curlVerify',
+            'visibility',
+            'order',
+            'updatedAt'
+          ])
+        ) &&
+        isAdmin();
+
+      allow delete: if isSignedIn() && isValidId(writeupId) && isAdmin();
+    }
+
+    // Collection 2: /siteMedia/{slotId}
+    match /siteMedia/{slotId} {
+      allow get: if isValidId(slotId) && isAllowedMediaSlotId(slotId) && (isAdmin() || (resource != null && existing().visibility == "public"));
+      allow list: if existing().visibility == "public" || isAdmin();
+
+      allow create: if isSignedIn() &&
+        isValidId(slotId) &&
+        isAllowedMediaSlotId(slotId) &&
+        isValidSiteMedia(incoming(), slotId) &&
+        incoming().createdAt == request.time &&
+        incoming().updatedAt == request.time &&
+        isAdmin();
+
+      allow update: if isValidSiteMedia(incoming(), slotId) &&
+        isSignedIn() &&
+        isValidId(slotId) &&
+        isAllowedMediaSlotId(slotId) &&
+        incoming().slot == existing().slot &&
+        incoming().authorUid == existing().authorUid &&
+        incoming().createdAt == existing().createdAt &&
+        incoming().updatedAt == request.time &&
+        incoming().diff(existing()).affectedKeys().hasOnly(['imageUrl', 'blendMode', 'updatedAt']) &&
+        isAdmin();
+
+      allow delete: if isSignedIn() && isValidId(slotId) && isAllowedMediaSlotId(slotId) && isAdmin();
+    }
+
+    // Collection 3: /siteConfig/{configId}
+    match /siteConfig/{configId} {
+      allow get: if isValidId(configId) && (isAdmin() || (resource != null && existing().visibility == "public"));
+      allow list: if existing().visibility == "public" || isAdmin();
+
+      allow create: if isSignedIn() &&
+        isValidId(configId) &&
+        isValidPortfolioMeta(incoming()) &&
+        incoming().createdAt == request.time &&
+        incoming().updatedAt == request.time &&
+        isAdmin();
+
+      allow update: if isValidPortfolioMeta(incoming()) &&
+        isSignedIn() &&
+        isValidId(configId) &&
+        incoming().authorUid == existing().authorUid &&
+        incoming().createdAt == existing().createdAt &&
+        incoming().updatedAt == request.time &&
+        incoming().diff(existing()).affectedKeys().hasOnly(['seeded', 'updatedAt']) &&
+        isAdmin();
+
+      allow delete: if false;
+    }
+
+    // Collection 4: /admins/{adminId}
+    match /admins/{adminId} {
+      allow get: if isSignedIn() && isValidId(adminId) && request.auth.uid == adminId;
+      allow list: if false;
+      allow create, update, delete: if false;
+    }
+  }
+}
